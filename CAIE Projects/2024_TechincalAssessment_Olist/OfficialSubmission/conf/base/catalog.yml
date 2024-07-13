@@ -1,0 +1,103 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+
+# Raw Data
+customers:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_customers_dataset.csv
+
+items:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_order_items_dataset.csv
+
+payment:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_order_payments_dataset.csv
+
+review:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_order_reviews_dataset.csv
+
+order:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_orders_dataset.csv
+
+product:
+  type: pandas.CSVDataset
+  filepath: src/dataprep/rawdata/olist_products_dataset.csv
+
+# Processed Data(Data Processing)
+customers_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/customers_df.pq
+
+items_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/items_df.pq
+
+payment_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/payment_df.pq
+
+review_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/review_df.pq
+
+order_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/order_df.pq
+
+product_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/product_df.pq
+
+merged_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/merged_df.pq
+
+cleaned_df:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/data_processing/cleaned_df.pq
+
+# Final Output(Data Processing)
+model_input_table:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/ml_pipeline_data/model_table.pq
+
+# Saving outputs to ensure fine tuning is done on a consistent set of data
+X_train_resampled:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/X_train_resampled.pq
+
+y_train_resampled:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/y_train_resampled.pq
+
+X_test:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/X_test.pq
+
+y_test:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/y_test.pq
+
+X_val:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/X_val.pq
+
+y_val:
+  type: pandas.ParquetDataset
+  filepath: src/dataprep/processed_data/saved_outputs/y_val.pq
+
+# Saved Models
+regressor:
+  type: pickle.PickleDataset
+  filepath: saved_model/regressor.pickle
+  versioned: true
+
+regressor_fine:
+  type: pickle.PickleDataset
+  filepath: saved_model/regressor_fine.pickle
+  versioned: true

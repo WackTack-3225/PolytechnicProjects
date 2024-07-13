@@ -1,0 +1,26 @@
+data_split:
+  random_seed: 42 # For reproduceability
+  train_test_size: 0.2 # 80% train, 20% test
+  validate_size: 0.25 # 80% x 0.25 = 20% of original
+
+data_scaling:
+  type: 'RandomUnderSampling' # Choose Between 'SMOTE', 'NearMiss' and 'RandomUnderSampling'
+
+ML_model:
+  type: 'XGB' # Choose between 'RF' or 'XGB'
+
+ML_Finetuning:
+  random_state: 3225 # Promotes reproduceability
+
+  # GB parameters
+  GB_booster: 'gbtree' # Between 'gbtree' or 'dart'
+  GB_lambda: 2 # 0 - inf
+  GB_learningrate: 0.02 # 0 - 1
+  GB_n_estimator: 30 # 0 - inf
+  GB_max_depth: 10 # 0 - inf
+  
+  # RF Parameters
+  RF_criterion: 'log_loss' # Between gini, entropy, log_loss
+  RF_n_estimator: 30 # 0 - inf
+  RF_max_depth: 10
+  RF_max_features: 5
