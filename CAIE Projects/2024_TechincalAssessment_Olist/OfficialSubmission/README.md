@@ -1,12 +1,12 @@
 ## Personal Details
-Full Name: Tan Min Zheng
-Admin Number: 222983R
-Email Address(School): 222983R@mymail.nyp.edu.sg
-Email Address(Private): businesszheng@yahoo.com
+Full Name: #####
+Admin Number: #####
+Email Address(School): ######
+Email Address(Private): ######
 
 ## Folder Overview
 
-tan_min_zheng_222983R/
+######/
 
 ├── .venv
 ├── conf
@@ -180,7 +180,7 @@ In general, each pipeline is defined by the nodes.py and pipeline.py in each fol
 - The `pipeline.py` file defines the node, sequence, inputs and outputs of the code
 
 ## Instruction of execution of pipeline & modifying parameters
-1) Enter the file's current directory in WSL (It should look like `cd /mnt/c/Users/RyanT/tan_min_zheng_222983R`)
+1) Enter the file's current directory in WSL (It should look like `cd /mnt/drive/Users/user_name/folder_name`)
 2) Install Required libraries
     - Run the Command `pip install -r requirements.txt` in your terminal in WSL in the venv
 3) To execute the pipeline, simply run `bash run.sh` and select the fuctions of the pipeline you want to use
