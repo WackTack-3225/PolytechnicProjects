@@ -1,0 +1,239 @@
+function updateAttendance() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the "Automation" sheet
+  var automationSheet = ss.getSheetByName("Automation");
+  
+  // Get the "Attendance" sheet
+  var attendanceSheet = ss.getSheetByName("Attendance");
+  
+  // Get the range of admin numbers in "Automation" sheet
+  var adminNumbers = automationSheet.getRange("B4:B").getValues().flat().filter(String);
+  
+  // Get the header row of the "Attendance" sheet
+  var attendanceHeaders = attendanceSheet.getRange("A1:Z1").getValues()[0];
+  
+  // Get the column name from B2 in "Automation" sheet
+  var columnName = automationSheet.getRange("B2").getValue();
+  
+  // Find the column index in "Attendance" sheet that matches the column name
+  var columnIndex = attendanceHeaders.indexOf(columnName) + 1;
+  if (columnIndex == 0) {
+    Logger.log("Column not found");
+    return;
+  }
+  
+  // Get the range of admin numbers in "Attendance" sheet
+  var attendanceNumbersRange = attendanceSheet.getRange("C2:C");
+  var attendanceNumbers = attendanceNumbersRange.getValues().flat().filter(String);
+  
+  // Initialize counter for updates
+  var updateCount = 0;
+  
+  // Loop through admin numbers in "Automation" sheet
+  for (var i = 0; i < adminNumbers.length; i++) {
+    var adminNumber = adminNumbers[i];
+    
+    // Find the row index in "Attendance" sheet that matches the admin number
+    var rowIndex = attendanceNumbers.indexOf(adminNumber) + 2; // +2 because of header row and 0-based index
+    if (rowIndex > 1) {
+      // Update the cell in the corresponding column to true
+      attendanceSheet.getRange(rowIndex, columnIndex).setValue(true);
+      // Increment the update counter
+      updateCount++;
+    }
+  }
+  
+  // Show the number of updates in a UI popup
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Update Subcom Attendance', 'Number of subcoms attended: ' + updateCount, ui.ButtonSet.OK);
+}
+
+
+function getAvailability() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the "Automation" sheet
+  var automationSheet = ss.getSheetByName("Automation");
+  
+  // Get the "Availability" sheet
+  var availabilitySheet = ss.getSheetByName("Availability");
+  
+  if (!automationSheet || !availabilitySheet) {
+    Logger.log("One or both sheets not found");
+    return;
+  }
+  
+  // Get the range of admin numbers in "Automation" sheet
+  var adminNumbersRange = automationSheet.getRange("E3:E");
+  var adminNumbers = adminNumbersRange.getValues().flat().filter(String);
+  
+  // Get the range of admin numbers in "Availability" sheet
+  var availabilityNumbersRange = availabilitySheet.getRange("C2:C");
+  var availabilityNumbers = availabilityNumbersRange.getValues().flat().filter(String);
+  
+  // Loop through admin numbers in "Automation" sheet
+  for (var i = 0; i < adminNumbers.length; i++) {
+    var adminNumber = adminNumbers[i];
+    
+    // Find the row index in "Availability" sheet that matches the admin number
+    var rowIndex = availabilityNumbers.indexOf(adminNumber) + 2; // +2 because of header row and 0-based index
+    
+    if (rowIndex > 1) {
+      // Get the values from columns B, E, and F in "Availability" sheet
+      var valueB = availabilitySheet.getRange("B" + rowIndex).getValue();
+      var valueE = availabilitySheet.getRange("E" + rowIndex).getValue();
+      var valueF = availabilitySheet.getRange("F" + rowIndex).getValue();
+      
+      // Set the values in columns F, G, H in "Automation" sheet starting from row F3, G3, H3 onwards
+      automationSheet.getRange("F" + (i + 3)).setValue(valueB);
+      
+      // Set the availability status in column G
+      var availabilityStatus = valueE ? "Unavailable" : "Available";
+      automationSheet.getRange("G" + (i + 3)).setValue(availabilityStatus);
+      
+      // Set the value in column H
+      automationSheet.getRange("H" + (i + 3)).setValue(valueF);
+    } else {
+      Logger.log("Admin number " + adminNumber + " not found in Availability sheet");
+    }
+  }
+  
+  // Show a confirmation dialog
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Get Availability', 'Fetched availability information for admin numbers', ui.ButtonSet.OK);
+}
+
+
+
+function activateSubco() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the "Automation" sheet
+  var automationSheet = ss.getSheetByName("Automation");
+  
+  // Get the target sheet (assuming it's the same as "Availability" sheet)
+  var targetSheet = ss.getSheetByName("Availability");
+  
+  if (!automationSheet || !targetSheet) {
+    Logger.log("One or both sheets not found");
+    return;
+  }
+  
+  // Get the range of admin numbers in "Automation" sheet
+  var adminNumbersRange = automationSheet.getRange("E3:E");
+  var adminNumbers = adminNumbersRange.getValues().flat().filter(String);
+  
+  // Get the text from cell J3 in "Automation" sheet
+  var textToUpdate = automationSheet.getRange("J3").getValue();
+  
+  // Get the range of admin numbers in the target sheet
+  var targetNumbersRange = targetSheet.getRange("C2:C");
+  var targetNumbers = targetNumbersRange.getValues().flat().filter(String);
+  
+  // Loop through admin numbers in "Automation" sheet
+  for (var i = 0; i < adminNumbers.length; i++) {
+    var adminNumber = adminNumbers[i];
+    
+    // Find the row index in the target sheet that matches the admin number
+    var rowIndex = targetNumbers.indexOf(adminNumber) + 2; // +2 because of header row and 0-based index
+    
+    if (rowIndex > 1) {
+      // Change the value in column E to true
+      targetSheet.getRange("E" + rowIndex).setValue(true);
+      
+      // Update the text in column F
+      targetSheet.getRange("F" + rowIndex).setValue(textToUpdate);
+    } else {
+      Logger.log("Admin number " + adminNumber + " not found in target sheet");
+    }
+  }
+  
+  // Display the updated details in "Automation" sheet same as in getAvailability
+  getAvailability();
+}
+
+function deactivateSubco() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the "Automation" sheet
+  var automationSheet = ss.getSheetByName("Automation");
+  
+  // Get the target sheet (assuming it's the same as "Availability" sheet)
+  var targetSheet = ss.getSheetByName("Availability");
+  
+  if (!automationSheet || !targetSheet) {
+    Logger.log("One or both sheets not found");
+    return;
+  }
+  
+  // Get the range of admin numbers in "Automation" sheet
+  var adminNumbersRange = automationSheet.getRange("E3:E");
+  var adminNumbers = adminNumbersRange.getValues().flat().filter(String);
+  
+  // Get the range of admin numbers in the target sheet
+  var targetNumbersRange = targetSheet.getRange("C2:C");
+  var targetNumbers = targetNumbersRange.getValues().flat().filter(String);
+  
+  // Loop through admin numbers in "Automation" sheet
+  for (var i = 0; i < adminNumbers.length; i++) {
+    var adminNumber = adminNumbers[i];
+    
+    // Find the row index in the target sheet that matches the admin number
+    var rowIndex = targetNumbers.indexOf(adminNumber) + 2; // +2 because of header row and 0-based index
+    
+    if (rowIndex > 1) {
+      // Change the value in column E to false
+      targetSheet.getRange("E" + rowIndex).setValue(false);
+      
+      // Remove the text from column F
+      targetSheet.getRange("F" + rowIndex).setValue("");
+    } else {
+      Logger.log("Admin number " + adminNumber + " not found in target sheet");
+    }
+  }
+  
+  // Display the updated details in "Automation" sheet same as in getAvailability
+  getAvailability();
+}
+
+function clearAll() {
+  // Get the active spreadsheet
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Get the "Automation" sheet
+  var automationSheet = ss.getSheetByName("Automation");
+  
+  if (!automationSheet) {
+    Logger.log("Automation sheet not found");
+    return;
+  }
+  
+  // Clear values from B4 onwards vertically
+  automationSheet.getRange("B4:B").clearContent();
+  
+  // Clear values from E3:H3 onwards vertically
+  automationSheet.getRange("E3:H").clearContent();
+
+  // Clear values from J3
+  automationSheet.getRange("J3").clearContent();
+  
+  // Show a confirmation dialog
+  var ui = SpreadsheetApp.getUi();
+  ui.alert('Clear All', 'Cleared specified ranges in Automation sheet', ui.ButtonSet.OK);
+}
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('Subcom Management')
+      .addItem('Update Subcom Attendance', 'updateAttendance')
+      .addItem('Get Subco Availability', 'getAvailability')
+      .addItem('Activate Subco for event', 'activateSubco')
+      .addItem('Deactivate Subco for event', 'deactivateSubco')
+      .addItem('Clear All', 'clearAll')
+      .addToUi();
+}

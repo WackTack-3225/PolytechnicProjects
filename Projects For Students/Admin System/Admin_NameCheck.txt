@@ -1,0 +1,37 @@
+function checkAndDeleteStudents() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var historicalSheet = ss.getSheetByName("Database");
+  var inputSheet = ss.getSheetByName("Input");
+
+  // Get data starting from the second row to avoid the header
+  var historicalData = historicalSheet.getRange(1, 3, historicalSheet.getLastRow()).getValues();
+  var inputData = inputSheet.getRange(2, 3, inputSheet.getLastRow() - 1).getValues(); // Starts from row 2
+
+  // Convert the historical data to a flat array for easier searching
+  var historicalList = historicalData.map(function(row) { return row[0]; });
+  var rowsDeleted = 0; // Initialize a counter for the rows deleted
+
+  // Iterate over input data from the bottom to the top, starting from row 2
+  for (var i = inputData.length - 1; i >= 0; i--) {
+    var adminNumber = inputData[i][0];
+    if (historicalList.indexOf(adminNumber) > -1) {
+      // Delete the entire row if the admin number exists in the historical list
+      // Since inputData starts from row 2, add 1 to align with actual sheet rows
+      inputSheet.deleteRow(i + 2); // Adjusted to account for starting from the second row
+      rowsDeleted++; // Increment the counter each time a row is deleted
+    }
+  }
+
+  // Log the number of rows deleted to the Logger
+  Logger.log("Rows Deleted: " + rowsDeleted);
+
+  // Optionally, you can display a message box in the spreadsheet with the count
+  SpreadsheetApp.getUi().alert("Rows Deleted: " + rowsDeleted);
+}
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('Student Management')
+      .addItem('Delete Existing Students', 'checkAndDeleteStudents')
+      .addToUi();
+}
