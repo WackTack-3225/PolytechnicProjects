@@ -1,3 +1,103 @@
+// Global variable to store the People API scope
+var PEOPLE_API_SCOPE = 'https://www.googleapis.com/auth/contacts';
+
+// Function to handle the OAuth2 authorization flow
+function getOAuthService() {
+  return OAuth2.createService('PeopleAPI')
+    .setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+    .setTokenUrl('https://accounts.google.com/o/oauth2/token')
+    .setClientId('*****') // Replace with your client ID
+    .setClientSecret('*****') // Replace with your client secret
+    .setCallbackFunction('authCallback')
+    .setPropertyStore(PropertiesService.getUserProperties())
+    .setScope(PEOPLE_API_SCOPE);
+}
+
+// OAuth2 callback function
+function authCallback(request) {
+  var service = getOAuthService();
+  var authorized = service.handleCallback(request);
+  if (authorized) {
+    return HtmlService.createHtmlOutput('Success! You can close this tab.');
+  } else {
+    return HtmlService.createHtmlOutput('Denied. You can close this tab');
+  }
+}
+
+// Function to reset OAuth2 token (for debugging)
+function resetOAuth() {
+  var service = getOAuthService();
+  service.reset();
+}
+
+// AUTO ADDER
+function addStudentsToContacts() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var inputSheet = ss.getSheetByName("Input");
+
+  var inputData = inputSheet.getRange(2, 3, inputSheet.getLastRow() - 1).getValues(); // Starts from row 2
+
+  var service = getOAuthService();
+  if (service.hasAccess()) {
+    for (var i = 0; i < inputData.length; i++) {
+      var studentName = inputSheet.getRange(i + 2, 2).getValue(); // COL B
+      var studyStage = inputSheet.getRange(i + 2, 6).getValue(); // COL F
+      var studentPhone = inputSheet.getRange(i + 2, 7).getValue(); // COL G
+      addStudentToContactsAPI(studentName, studentPhone, studyStage, service);
+    }
+
+    SpreadsheetApp.getUi().alert("Students have been added to Google Contacts.");
+  } else {
+    var authorizationUrl = service.getAuthorizationUrl();
+    var template = HtmlService.createTemplate(
+      '<a href="<?= authorizationUrl ?>" target="_blank">Authorize Google Contacts</a>'
+    );
+    template.authorizationUrl = authorizationUrl;
+    var page = template.evaluate();
+    SpreadsheetApp.getUi().showModalDialog(page, 'Authorize');
+  }
+}
+
+// Function to add a contact using the People API
+function addStudentToContactsAPI(name, phone, studyStage, service) {
+  // Ensure the phone number is a string and format it to E.164 standard
+  phone = phone.toString().trim();
+
+  if (!phone.startsWith('+')) {
+    phone = '+65' + phone; // Append country code
+  }
+  
+  // Prepend the study stage to the name
+  var fullName = name + " (" + "Y" + studyStage + ")"; 
+
+  var url = 'https://people.googleapis.com/v1/people:createContact';
+  var payload = {
+    "names": [
+      {
+        "givenName": fullName
+      }
+    ],
+    "phoneNumbers": [
+      {
+        "value": phone
+      }
+    ]
+  };
+
+  var response = UrlFetchApp.fetch(url, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    headers: {
+      Authorization: 'Bearer ' + service.getAccessToken()
+    }
+  });
+
+  Logger.log(response.getContentText());
+}
+
+// START OF DELETER SECTION
+
 function checkAndDeleteStudents() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var historicalSheet = ss.getSheetByName("Database");
@@ -29,9 +129,12 @@ function checkAndDeleteStudents() {
   SpreadsheetApp.getUi().alert("Rows Deleted: " + rowsDeleted);
 }
 
+// UI SECTION 
+
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('Student Management')
       .addItem('Delete Existing Students', 'checkAndDeleteStudents')
+      .addItem('Add Students to Contacts', 'addStudentsToContacts')
       .addToUi();
 }
