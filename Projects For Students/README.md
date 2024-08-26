@@ -10,10 +10,9 @@ The code is stored in a text file, copy paste it into the apps script extenion p
 # Projects
 
 * Admin System
-> The admin system only checks the admin number(A Unique Identifier) to determine if someone exists in the database. The name of the admin number field or any fied in particular is not important BUT the column in which the admin numbers are located is important as the code takes the data starting from `Row:2, Column:3`. The way to use them is technically inside so I will not explain. 
 
-As of 26/8/2024:
-* Admin System
+~~ > The admin system only checks the admin number(A Unique Identifier) to determine if someone exists in the database. The name of the admin number field or any fied in particular is not important BUT the column in which the admin numbers are located is important as the code takes the data starting from `Row:2, Column:3`. The way to use them is technically inside so I will not explain. ~~
+
 > The admin system only checks the admin number(A Unique Identifier) to determine if someone exists in the database. The name of the admin number field or any fied in particular is not important BUT the column in which the admin numbers are located is important as the code takes the data starting from `Row:2, Column:3`. The way to use them is technically inside so I will not explain. 
 > An additional functionality was added, which utilized the google API service to help automate adding of people into google contact. This mainly added into our own gmail account. This proved to be a huge step forward in terms of efficiency for admins. 
 
