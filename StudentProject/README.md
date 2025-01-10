@@ -3,7 +3,7 @@ This folder is used for my work done in my tenure as the Head of Secretary. I im
 
 Mainly the codes here are for an attendance/database management system in Google Sheets. 
 
-From a data engineering standpoint, Apps script is only good for low latency processes and really does not handle large data inputs well in any shape or form. This is not for an industrial application or for a large company in any shape or form, it is for Secretaries or roles with the relevant responsibilties to manage a club of >50-100 students.
+Apps script is only good for low latency processes and really does not handle large data inputs well in any shape or form. This is not for an industrial application or for a large company in any shape or form, it is for Secretaries or roles with the relevant responsibilties to manage a club of >50-100 students.
 
 The code is stored in a text file, copy paste it into the apps script extenion provided by google as a new project. 
 
